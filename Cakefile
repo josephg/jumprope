@@ -21,7 +21,7 @@ task 'build', 'Run the closure compiler over the javascript', ->
 
 		smaller = Math.round((1 - (code.length / file.length)) * 100)
 
-		output = 'lib/Rope.min.js'
+		output = 'Rope.min.js'
 		fs.writeFileSync output, code
 
 		console.log "Closure compiled: #{smaller}% smaller (#{code.length} bytes} written to #{output}"
