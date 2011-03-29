@@ -2,7 +2,7 @@
 
 assert = require 'assert'
 
-Rope = require '../lib/Rope'
+Rope = require '../src/Rope'
 
 random = Math.random
 

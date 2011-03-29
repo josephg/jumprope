@@ -1,7 +1,7 @@
 assert = require 'assert'
 assert = require 'assert'
 
-Rope = require '../lib/Rope'
+Rope = require '../src/Rope'
 
 helpers = require './helpers'
 randomInt = helpers.randomInt

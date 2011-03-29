@@ -1,9 +1,9 @@
-helpers = require './helpers'
+helpers = require '../test/helpers'
 randomInt = helpers.randomInt
 randomStr = helpers.randomStr
 
 Rope = require '../src/Rope'
-Compiled = require '../lib/Rope-compiled'
+Compiled = require '../lib/Rope.min'
 
 time = (fn, iterations) ->
 	start = Date.now()
@@ -13,7 +13,7 @@ time = (fn, iterations) ->
 timeprint = (fn, iterations, name) ->
 	console.log "Benchmarking #{iterations} iterations of #{name}..."
 	result = time fn, iterations
-	console.log "#{name} took #{result} ms, or #{result / iterations} ms per iteration"
+	console.log "#{name} took #{result} ms. #{result / iterations} ms per iteration, or #{iterations/result * 1000} iterations per second"
 
 permute = (r) ->
 	random = helpers.useRandomWithSeed 100
@@ -32,9 +32,9 @@ permute = (r) ->
 
 			r.del pos, length
 
-#timeprint permute(helpers.Str()), 200000, 'Str'
 
 testSizes = ->
+	throw new Error "You need to uncomment the setSpliceSize line in Rope.coffee to use this test" unless Rope.setSpliceSize?
 	size = 4
 	while size < 20000
 		Rope.setSplitSize size
@@ -47,6 +47,7 @@ testSizes = ->
 		size *= 2
 
 testBias = ->
+	throw new Error "You need to uncomment the setBias line in Rope.coffee to use this test" unless Rope.setBias?
 	for bias in [0.1..0.99] by 0.02
 		Rope.setBias bias
 
@@ -56,7 +57,9 @@ testBias = ->
 
 naiveTest = ->
 	r = new Rope()
-	timeprint permute(r), 200000, 'Rope'
+	iterations = 4000
+	timeprint permute(r), iterations, 'Rope'
+	timeprint permute(helpers.Str()), iterations, 'Str'
 	r.stats()
 
 testBias()

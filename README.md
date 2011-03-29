@@ -40,3 +40,15 @@ At least in V8 (Node / Chrome) it seems like the cross-over point where it becom
 Of course, when your strings are that small it doesn't matter that much how you're using them.
 
 Once your strings get long, jumpropes become a lot faster.
+
+
+Compiling
+---------
+
+I'm using a Cakefile to build. Run `cake build:coffee` to recompile the project, or `cake build` to recompile the project and run it through the closure compiler again.
+
+
+Acknowledgements
+----------------
+
+Thanks to Ben Weaver for his node [closure library](https://github.com/weaver/scribbles/tree/master/node/google-closure/)
