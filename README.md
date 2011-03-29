@@ -48,6 +48,12 @@ Compiling
 I'm using a Cakefile to build. Run `cake build:coffee` to recompile the project, or `cake build` to recompile the project and run it through the closure compiler again.
 
 
+License
+-------
+
+MIT licensed, so do what you want with it.
+
+
 Acknowledgements
 ----------------
 
