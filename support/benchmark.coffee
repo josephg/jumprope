@@ -3,7 +3,7 @@ randomInt = helpers.randomInt
 randomStr = helpers.randomStr
 
 Rope = require '../src/Rope'
-Compiled = require '../lib/Rope.min'
+Compiled = require '../Rope.min'
 
 time = (fn, iterations) ->
 	start = Date.now()
@@ -13,7 +13,7 @@ time = (fn, iterations) ->
 timeprint = (fn, iterations, name) ->
 	console.log "Benchmarking #{iterations} iterations of #{name}..."
 	result = time fn, iterations
-	console.log "#{name} took #{result} ms. #{result / iterations} ms per iteration, or #{iterations/result * 1000} iterations per second"
+	console.log "#{name} took #{result} ms. #{result / iterations} ms per iteration, #{iterations/result * 1000} iterations per second"
 
 permute = (r) ->
 	random = helpers.useRandomWithSeed 100
@@ -57,11 +57,11 @@ testBias = ->
 
 naiveTest = ->
 	r = new Rope()
-	iterations = 4000
+	iterations = 40000
 	timeprint permute(r), iterations, 'Rope'
 	timeprint permute(helpers.Str()), iterations, 'Str'
 	r.stats()
 
-testBias()
-#naiveTest()
+#testBias()
+naiveTest()
 
