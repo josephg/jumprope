@@ -106,8 +106,26 @@ tests = (Impl) ->
 		test.strictEqual strings.join(''), str
 
 		test.done()
+	
+	'substring with an empty string': (test) ->
+		r = new Impl
+		s = r.substring 0, 0
+		test.strictEqual s, ''
 
-	'del with longer strings works as expected': (test) ->
+		test.done()
+
+	'substring': (test) ->
+		r = new Impl '0123456'
+
+		test.strictEqual '0', r.substring 0, 1
+		test.strictEqual '1', r.substring 1, 1
+		test.strictEqual '01', r.substring 0, 2
+		test.strictEqual '0123456', r.substring 0, 7
+		test.strictEqual '456', r.substring 4, 3
+
+		test.done()
+
+	'delete and insert with long strings works as expected': (test) ->
 		str = "some really long string. Look at me go! Oh my god this has to be the longest string I've ever seen. Holy cow. I can see space from up here. Hi everybody - check out my amazing string!\n"
 		str = new Array(1001).join str
 
@@ -142,9 +160,12 @@ tests = (Impl) ->
 
 #				console.log "Deleting #{length} chars (#{str[pos...pos + length]}) at #{pos}"
 
+				deletedText = str[pos...pos + length]
+				test.strictEqual deletedText, r.substring pos, length
+
 				callbackCalled = no
 				r.del pos, length, (s) ->
-					assert.strictEqual s, str[pos...pos + length]
+					assert.strictEqual s, deletedText
 					callbackCalled = yes
 
 				str = str[0...pos] + str[(pos + length)...]

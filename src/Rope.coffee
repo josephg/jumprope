@@ -59,7 +59,7 @@ Rope.prototype['each'] = each = (fn) ->
 	# Skip the head, since it has no string.
 	e = @head.nexts[0]
 
-	while e?
+	while e
 		fn e.str
 		e = e.nexts[0]
 
@@ -68,26 +68,31 @@ Rope.prototype['toString'] = ->
 	@['each'] (str) -> strings.push str
 	strings.join ''
 
-Rope.prototype['insert'] = (insertPos, str) ->
-	throw new Error('pos must be a number') unless typeof insertPos == 'number'
-	throw new Error("pos must be within the rope (#{@length})") unless 0 <= insertPos <= @length
-	throw new Error('inserted text must be a string') unless typeof str == 'string'
-
-#	console.log "Inserting '#{str}' at #{insertPos} in '#{@toString()}'" if Rope.p
-
+# Navigate to a particular position in the string
+Rope::search = (offset) ->
+	throw new Error('position must be a number') unless typeof offset == 'number'
+	throw new Error("pos #{offset} must be within the rope (#{@length})") unless 0 <= offset <= @length
 	e = @head
 	nodes = new Array @head.nexts.length
 	subtreesize = new Array @head.nexts.length
-	
-	offset = insertPos
+
 	if e.nexts.length > 0
-		for h in [@head.nexts.length - 1..0]
+		for h in [e.nexts.length - 1..0]
 			while offset > e.subtreesize[h]
 				offset -= e.subtreesize[h]
 				e = e.nexts[h]
 
 			subtreesize[h] = offset
 			nodes[h] = e
+
+	[e, offset, nodes, subtreesize]
+
+Rope.prototype['insert'] = (insertPos, str) ->
+	throw new Error('inserted text must be a string') unless typeof str == 'string'
+
+#	console.log "Inserting '#{str}' at #{insertPos} in '#{@toString()}'" if Rope.p
+
+	[e, offset, nodes, subtreesize] = @search insertPos
 	
 	updateSubtreeSizes = (amt) ->
 		for i in [0...nodes.length]
@@ -154,27 +159,15 @@ Rope.prototype['insert'] = (insertPos, str) ->
 #
 # Returns the rope, for chaining.
 Rope.prototype['del'] = (delPos, length, callback) ->
-	throw new Error('pos must be a number') unless typeof delPos == 'number'
-	throw new Error("pos #{delPos} must be within the rope (#{@length})") unless 0 <= delPos <= @length
 	throw new Error("pos #{delPos + length} must be within the rope (#{@length})") unless 0 <= delPos + length <= @length
 
 #	console.log "Deleting '#{@toString()[delPos...delPos+length]}' at #{delPos}" if Rope.p
 
-	e = @head
-	nodes = new Array @head.nexts.length
 	strings = [] if callback?
 	
 	@print() if Rope.p
 
-	# First, find the element. This code could probably be shared with insert, above.
-	offset = delPos
-	if e.nexts.length > 0
-		for h in [e.nexts.length - 1..0]
-			while offset > e.subtreesize[h]
-				offset -= e.subtreesize[h]
-				e = e.nexts[h]
-
-			nodes[h] = e
+	[e, offset, nodes] = @search delPos
 
 	@length -= length
 
@@ -220,6 +213,24 @@ Rope.prototype['del'] = (delPos, length, callback) ->
 
 	this
 
+
+Rope.prototype['substring'] = (offset, length) ->
+	throw new Error("pos #{offset + length} must be within the rope (#{@length})") unless 0 <= offset + length <= @length
+
+	[e, offset] = @search offset
+	strings = []
+	e = e.nexts[0] unless e.str?
+
+	while e and length > 0
+		s = e.str[offset...offset + length]
+		strings.push s
+
+		offset = 0
+		length -= s.length
+
+		e = e.nexts[0]
+
+	strings.join ''
 
 # Uncomment these functions in order to run the split size test or the bias test.
 # They have been removed to keep the compiled size down.
