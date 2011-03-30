@@ -38,7 +38,7 @@ Output:
 API
 ---
 
-* Constructor: `new Rope([initial text])`
+* `new Rope([initial text])`
 
 Create a new rope, optionally with the specified initial text.
 
@@ -47,27 +47,27 @@ Create a new rope, optionally with the specified initial text.
     var r = new Rope(); // Create a new Rope
     var r = new Rope('str'); // Create a new Rope with initial string 'str'
 
-* Insert: `insert(position, text)`
+* `r.insert(position, text)`
 
 Insert text into the rope at the specified position.
 
     r.insert(4, 'some text'); // Insert 'some text' at position 4. Position must be inside the string.
 
-* Delete: `del(position, count, [callback])`
+* `r.del(position, count, [callback])`
 
 Delete `count` characters from the rope at `position`. Delete can optionally take a callback, which is called with the deleted substring.
 
     r.del(4, 10); // Delete 10 characters at position 4
     r.del(4, 10, function(str) { console.log(str); }); // Delete 10 characters, and print them out.
 
-* Each: `each(callback)`
+* `r.each(callback)`
 
 Iterate through the rope. The callback will be passed the whole string, a few characters at a time. This is the fastest way to read the string if you want to write it over a network stream, for example.
 
     // Print the string out, a few characters at a time.
     r.each(function(str) { console.log(str); })
 
-* Get javascript string: `toString()`
+* `r.toString()`
 
 Convert the rope into a javascript string.
 
@@ -75,13 +75,13 @@ Internally, this just calls `each()` and `.join`'s the result.
 
     console.log(r.toString());
 
-* length: `r.length`
+* `r.length`
 
 Get the number of characters in the rope.
 
     r.del(r.length - 4, 4); // Delete the last 4 characters in the string.
 
-* substring: `r.substring(position, length)`
+* `r.substring(position, length)`
 
 Get a substring of the string. Kinda like splice, I guess. Maybe I should copy the JS API.
 
