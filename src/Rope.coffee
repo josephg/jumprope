@@ -148,7 +148,12 @@ Rope.prototype['insert'] = (insertPos, str) ->
 #	console.log "Resulting string: '#{@toString()}'" if Rope.p
 	this
 
-Rope.prototype['del'] = (delPos, length) ->
+# Delete length characters at delPos.
+#
+# The optional callback is called with the deleted string.
+#
+# Returns the rope, for chaining.
+Rope.prototype['del'] = (delPos, length, callback) ->
 	throw new Error('pos must be a number') unless typeof delPos == 'number'
 	throw new Error("pos #{delPos} must be within the rope (#{@length})") unless 0 <= delPos <= @length
 	throw new Error("pos #{delPos + length} must be within the rope (#{@length})") unless 0 <= delPos + length <= @length
@@ -157,8 +162,11 @@ Rope.prototype['del'] = (delPos, length) ->
 
 	e = @head
 	nodes = new Array @head.nexts.length
+	strings = [] if callback?
 	
 	@print() if Rope.p
+
+	# First, find the element. This code could probably be shared with insert, above.
 	offset = delPos
 	if e.nexts.length > 0
 		for h in [e.nexts.length - 1..0]
@@ -169,6 +177,7 @@ Rope.prototype['del'] = (delPos, length) ->
 			nodes[h] = e
 
 	@length -= length
+
 	while length > 0
 		# Delete up to length from e
 
@@ -177,11 +186,10 @@ Rope.prototype['del'] = (delPos, length) ->
 			offset = 0
 		
 		removed = Math.min length, e.str.length - offset
-#		console.log "#{length} #{offset}"
-#		console.log (inspect e)
-#		console.log "#{e.str?} #{e.str.length}"
 
 		if removed < e.str.length
+			strings.push e.str[offset...offset + removed] if strings?
+
 			# Splice out the text.
 			e.str = e.str[...offset] + e.str[offset + removed..]
 			for i in [0...nodes.length]
@@ -190,6 +198,9 @@ Rope.prototype['del'] = (delPos, length) ->
 				else
 					nodes[i].subtreesize[i] -= removed
 		else
+			# Removing the whole element.
+			strings.push e.str if callback?
+
 			# Unlink the element
 			for i in [0...nodes.length]
 				if i < e.nexts.length
@@ -198,9 +209,14 @@ Rope.prototype['del'] = (delPos, length) ->
 				else
 					nodes[i].subtreesize[i] -= removed
 
+			# I wonder if it would be faster if a few removed elements were put in a pool - you wouldn't
+			# even need to reset their height when you reused them.
+
 			e = e.nexts[0]
 
 		length -= removed
+
+	callback(strings.join '') if callback?
 
 	this
 

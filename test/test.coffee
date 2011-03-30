@@ -82,6 +82,13 @@ tests = (Impl) ->
 
 		test.done()
 
+	'delete calls callback with deleted text': (test) ->
+		r = new Impl 'abcde'
+		r.del 1, 3, (str) -> test.strictEqual str, 'bcd'
+
+		test.expect 1
+		test.done()
+
 	'each with empty string': (test) ->
 		r = new Impl
 		# This probably won't call the method at all...
@@ -135,8 +142,14 @@ tests = (Impl) ->
 
 #				console.log "Deleting #{length} chars (#{str[pos...pos + length]}) at #{pos}"
 
+				callbackCalled = no
+				r.del pos, length, (s) ->
+					assert.strictEqual s, str[pos...pos + length]
+					callbackCalled = yes
+
 				str = str[0...pos] + str[(pos + length)...]
-				r.del pos, length
+
+				test.strictEqual callbackCalled, yes, 'didnt call the delete callback'
 
 			check test, r, str
 			assert.strictEqual str, r.toString()
