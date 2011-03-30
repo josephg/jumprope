@@ -1,9 +1,11 @@
 helpers = require '../test/helpers'
 randomInt = helpers.randomInt
 randomStr = helpers.randomStr
+addHelpers = helpers.addHelpers
 
-Rope = require '../src/Rope'
+Rope = addHelpers(require '../src/Rope')
 Compiled = require '../Rope.min'
+helpers.addHelpers(Rope)
 
 time = (fn, iterations) ->
 	start = Date.now()
