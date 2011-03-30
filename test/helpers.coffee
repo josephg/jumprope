@@ -36,45 +36,48 @@ exports.Str = (s = '') ->
 	}
 
 # Some more methods for Rope which we'll use in tests.
-Rope::verify = ->
-	nodes = (@head for [0...@head.nexts.length])
-	positions = (0 for [0...@head.nexts.length])
+exports.addHelpers = (Impl) ->
+	Impl::verify = ->
+		nodes = (@head for [0...@head.nexts.length])
+		positions = (0 for [0...@head.nexts.length])
 
-	pos = 0
-	e = @head
+		pos = 0
+		e = @head
 
-	while e != null
-		pos += e.str?.length ? 0
-		e = e.nexts[0] || null
+		while e != null
+			pos += e.str?.length ? 0
+			e = e.nexts[0] || null
 
-		for i in [0...nodes.length]
-			if nodes[i].subtreesize[i] + positions[i] == pos
-				assert.strictEqual nodes[i].nexts[i], e
+			for i in [0...nodes.length]
+				if nodes[i].subtreesize[i] + positions[i] == pos
+					assert.strictEqual nodes[i].nexts[i], e
 
-				nodes[i] = e
-				positions[i] = pos
-			else
-				assert.ok nodes[i].subtreesize[i] + positions[i] > pos, "asdf"
+					nodes[i] = e
+					positions[i] = pos
+				else
+					assert.ok nodes[i].subtreesize[i] + positions[i] > pos, "asdf"
 
-	assert.strictEqual pos, @length
+		assert.strictEqual pos, @length
 
-Rope::stats = ->
-	numElems = 0
-	e = @head
-	while e != null
-		e = e.nexts[0]
-		numElems++
+	Impl::stats = ->
+		numElems = 0
+		e = @head
+		while e != null
+			e = e.nexts[0]
+			numElems++
 
-	console.log "Length: #{@length}"
-	console.log "Num elements: #{numElems}"
-	console.log "Avg string length per element: #{@length / numElems}"
+		console.log "Length: #{@length}"
+		console.log "Num elements: #{numElems}"
+		console.log "Avg string length per element: #{@length / numElems}"
 
-Rope::print = ->
-	console.log "Rope with string '#{@['toString']()}'"
-	node = @head
-	while node?
-		console.log "#{inspect node}"
-		node = node.nexts[0]
+	Impl::print = ->
+		console.log "Rope with string '#{@['toString']()}'"
+		node = @head
+		while node?
+			console.log "#{inspect node}"
+			node = node.nexts[0]
+		
+		this
 	
-	this
+	Impl
 

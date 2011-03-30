@@ -4,36 +4,49 @@ assert = require 'assert'
 Rope = require '../src/Rope'
 
 helpers = require './helpers'
+helpers.addHelpers Rope
+
 randomInt = helpers.randomInt
 randomStr = helpers.randomStr
 
+RopeCompiled = try
+	require '../Rope.min'
+catch e
+	null
 
 #Rope = helpers.Str
 
 check = (test, r, str) ->
 	try
-		r.verify()
+		r.verify() if r.verify
 		assert.strictEqual r.toString(), str
 		assert.strictEqual r.length, str.length
+
+		strings = []
+		r.each (s) -> strings.push s
+		test.strictEqual strings.join(''), str
 	catch e
 		console.error 'Error when checking string:'
-		r.print()
+		r.print() if r.print
 		throw e
 
-module.exports =
+# I want to run the tests with both the normal rope implementation and the
+# closure compiled version (since closure is run with advanced settings, it can add
+# problems).
+tests = (Impl) ->
 	'empty rope has no content': (test) ->
-		r = new Rope
+		r = new Impl
 		check test, r, ''
 		test.done()
 	
 	'rope initialized with a string has that string as its content': (test) ->
 		str = 'Hi there'
-		r = new Rope str
+		r = new Impl str
 		check test, r, str
 		test.done()
 
 	'insert at location inserts': (test) ->
-		r = new Rope
+		r = new Impl
 
 		r.insert 0, 'AAA'
 		check test, r, 'AAA'
@@ -50,7 +63,7 @@ module.exports =
 		test.done()
 	
 	'delete at location deletes': (test) ->
-		r = new Rope '012345678'
+		r = new Impl '012345678'
 
 		r.del 8, 1
 		check test, r, '01234567'
@@ -69,11 +82,29 @@ module.exports =
 
 		test.done()
 
+	'each with empty string': (test) ->
+		r = new Impl
+		# This probably won't call the method at all...
+		r.each (str) ->
+			test.strictEqual str, ''
+
+		test.done()
+
+	'each with small string': (test) ->
+		str = 'howdy doody'
+		r = new Impl str
+
+		strings = []
+		r.each (s) -> strings.push s
+		test.strictEqual strings.join(''), str
+
+		test.done()
+
 	'del with longer strings works as expected': (test) ->
 		str = "some really long string. Look at me go! Oh my god this has to be the longest string I've ever seen. Holy cow. I can see space from up here. Hi everybody - check out my amazing string!\n"
 		str = new Array(1001).join str
 
-		r = new Rope str
+		r = new Impl str
 		test.strictEqual r.length, str.length
 		test.strictEqual r.toString(), str
 
@@ -85,7 +116,7 @@ module.exports =
 
 	'randomized test': (test) ->
 		str = ''
-		r = new Rope
+		r = new Impl
 
 		for [1..1000]
 			if Math.random() < 0.9
@@ -114,4 +145,9 @@ module.exports =
 		r.stats() if r.stats?
 
 		test.done()
-
+		
+exports.normal = tests Rope
+if RopeCompiled?
+	exports.compiled = tests RopeCompiled
+else
+	console.error 'Warning: Skipping tests on closure compiled code because I cant load it'

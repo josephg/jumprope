@@ -1,15 +1,34 @@
+# Rope implemented with skip lists!
+#
+# Each element in the skip list contains a string, an array of next pointers
+# and an array of subtree sizes.
+#
+# The next pointers work like normal skip lists. Here's some google results:
+# http://en.wikipedia.org/wiki/Skip_list
+# http://igoro.com/archive/skip-lists-are-fascinating/
+#
+# The subtree size is the number of characters between the start of the current
+# element and the start of the next element at that level in the list.
+#
+# So, e.subtreesize[4] == e.str.length + no. chars between e and e.nexts[4].
+#
+#
+# I use foo['bar'] syntax in a bunch of places to stop the closure compiler renaming
+# exported methods.
 
-# Benchmarking reveals this to be the fastest
+
+# The split size is the maximum number of characters to have in each element
+# in the list before splitting it out into multiple elements.
+# Benchmarking reveals 512 to be a pretty good number for this.
 splitSize = 512
+
+# Each skip list element has height >= H with P=bias^(H-1).
+#
+# I ran some benchmarks, expecting 0.5 to get the best speed. But, for some reason,
+# the speed is a bit better at 0.7.
 bias = 0.7
 
 #inspect = require('util').inspect
-
-randomInt = do ->
-	r = 10
-	(n) -> Math.abs((r = (r << 2) ^ (r << 1) - r + 1) % n)
-
-#Math.random = -> randomInt(100) / 100
 
 randomHeight = ->
 	length = 1
@@ -36,14 +55,17 @@ module['exports'] = Rope = (str) ->
 	@['insert'] 0, str if str?
 	this
 
-Rope.prototype['toString'] = ->
-	e = @head
-	strings = []
+Rope.prototype['each'] = each = (fn) ->
+	# Skip the head, since it has no string.
+	e = @head.nexts[0]
 
 	while e?
-		strings.push e.str
+		fn e.str
 		e = e.nexts[0]
-	
+
+Rope.prototype['toString'] = ->
+	strings = []
+	@['each'] (str) -> strings.push str
 	strings.join ''
 
 Rope.prototype['insert'] = (insertPos, str) ->
