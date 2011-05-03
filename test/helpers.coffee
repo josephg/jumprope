@@ -1,6 +1,7 @@
 # These are some helper methods for testing.
 
 assert = require 'assert'
+inspect = require('util').inspect
 
 Rope = require '../src/Rope'
 
@@ -39,7 +40,7 @@ exports.Str = (s = '') ->
 exports.addHelpers = (Impl) ->
 	Impl::verify = ->
 		nodes = (@head for [0...@head.nexts.length])
-		positions = (0 for [0...@head.nexts.length])
+		positions = @head.nexts.map -> 0
 
 		pos = 0
 		e = @head

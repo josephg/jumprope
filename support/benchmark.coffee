@@ -59,9 +59,9 @@ testBias = ->
 
 naiveTest = ->
 	r = new Rope()
-	iterations = 40000
+	iterations = 80000
 	timeprint permute(r), iterations, 'Rope'
-	timeprint permute(helpers.Str()), iterations, 'Str'
+#	timeprint permute(helpers.Str()), iterations, 'Str'
 	r.stats()
 
 #testBias()
