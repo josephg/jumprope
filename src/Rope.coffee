@@ -77,7 +77,10 @@ Rope::search = (offset) ->
 	subtreesize = new Array @head.nexts.length
 
 	if e.nexts.length > 0
-		for h in [e.nexts.length - 1..0]
+		# Coffeescript has no non-stupid way to loop backwards through a list:
+		# https://github.com/jashkenas/coffee-script/issues/1208
+		h = e.nexts.length
+		while h--
 			while offset > e.subtreesize[h]
 				offset -= e.subtreesize[h]
 				e = e.nexts[h]
@@ -95,9 +98,7 @@ Rope.prototype['insert'] = (insertPos, str) ->
 	[e, offset, nodes, subtreesize] = @search insertPos
 	
 	updateSubtreeSizes = (amt) ->
-		for i in [0...nodes.length]
-			nodes[i].subtreesize[i] += amt
-#			subtreesize[i] += amt
+		n.subtreesize[i] += amt for n, i in nodes
 
 	if e.str? and e.str.length + str.length < splitSize
 		# Insert the string into the current element
@@ -147,7 +148,7 @@ Rope.prototype['insert'] = (insertPos, str) ->
 			
 			@print() if Rope.p
 
-		insert str[i...i + splitSize] for i in [0...str.length] by splitSize
+		insert str[i...i + splitSize] for _, i in str by splitSize
 		insert end if end?
 	
 #	console.log "Resulting string: '#{@toString()}'" if Rope.p
@@ -185,22 +186,22 @@ Rope.prototype['del'] = (delPos, length, callback) ->
 
 			# Splice out the text.
 			e.str = e.str[...offset] + e.str[offset + removed..]
-			for i in [0...nodes.length]
+			for node, i in nodes
 				if i < e.nexts.length
 					e.subtreesize[i] -= removed
 				else
-					nodes[i].subtreesize[i] -= removed
+					node.subtreesize[i] -= removed
 		else
 			# Removing the whole element.
 			strings.push e.str if callback?
 
 			# Unlink the element
-			for i in [0...nodes.length]
+			for node, i in nodes
 				if i < e.nexts.length
-					nodes[i].subtreesize[i] = nodes[i].subtreesize[i] + e.subtreesize[i] - removed
-					nodes[i].nexts[i] = e.nexts[i]
+					node.subtreesize[i] = nodes[i].subtreesize[i] + e.subtreesize[i] - removed
+					node.nexts[i] = e.nexts[i]
 				else
-					nodes[i].subtreesize[i] -= removed
+					node.subtreesize[i] -= removed
 
 			# I wonder if it would be faster if a few removed elements were put in a pool - you wouldn't
 			# even need to reset their height when you reused them.
