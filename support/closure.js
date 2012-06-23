@@ -3,7 +3,7 @@
 /// Compress javascript with Node.js using the Closure Compiler
 /// Service.
 
-var sys = require('sys');
+var util = require('util');
 
 exports.compile = compile;
 
@@ -59,7 +59,7 @@ function compile(code, next) {
         if (err)
           next(err);
         else if ((error = obj.errors || obj.serverErrors || obj.warnings))
-          next(new Error('Failed to compile: ' + sys.inspect(error)));
+          next(new Error('Failed to compile: ' + util.inspect(error)));
         else
           next(null, obj.compiledCode);
       });
