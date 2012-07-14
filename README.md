@@ -1,12 +1,12 @@
 JumpRope
 ========
 
-Jumprope is a fun little library for efficiently editing strings in Javascript. If you have long strings and you need to insert or delete into them, you should use jumprope. Its way faster than splicing strings all the time, especially if the strings are big:
+Jumprope is a fun little library for efficiently editing strings in Javascript. If you have long strings and you need to insert or delete into them, you should use jumprope. Its way faster than splicing strings all the time if the strings are big:
 
     200000 random edits on an empty string, resulting in the string of size 431 206 chars long:
 
     Rope took 1788 ms. 0.00894 ms per iteration, or 111856.82326621923 iterations per second
-	Js strings took 40962 ms. 0.20481 ms per iteration, or 4882.574093061862 iterations per second
+    Js strings took 40962 ms. 0.20481 ms per iteration, or 4882.574093061862 iterations per second
 
 Ropes have insertion and deletion time of O(|s| * log(N)) where
 |s| is the length of the inserted / deleted region

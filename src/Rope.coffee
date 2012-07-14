@@ -55,7 +55,7 @@ module['exports'] = Rope = (str) ->
 	@['insert'] 0, str if str?
 	this
 
-Rope.prototype['each'] = each = (fn) ->
+Rope.prototype['each'] = Rope::each = (fn) ->
 	# Skip the head, since it has no string.
 	e = @head.nexts[0]
 
@@ -65,7 +65,7 @@ Rope.prototype['each'] = each = (fn) ->
 
 Rope.prototype['toString'] = ->
 	strings = []
-	@['each'] (str) -> strings.push str
+	@each (str) -> strings.push str
 	strings.join ''
 
 # Navigate to a particular position in the string

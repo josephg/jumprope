@@ -1,11 +1,9 @@
 helpers = require '../test/helpers'
-randomInt = helpers.randomInt
-randomStr = helpers.randomStr
-addHelpers = helpers.addHelpers
+{randomInt, randomStr, addHelpers} = helpers
 
 Rope = addHelpers(require '../src/Rope')
 Compiled = require '../Rope.min'
-helpers.addHelpers(Rope)
+#helpers.addHelpers(Rope)
 
 time = (fn, iterations) ->
 	start = Date.now()
@@ -23,7 +21,7 @@ permute = (r) ->
 	->
 		if random() < 0.95
 			# Insert.
-			text = randomStr(2)
+			text = randomStr(randomInt 2)
 			pos = randomInt(r.length + 1)
 
 			r.insert pos, text
@@ -34,6 +32,10 @@ permute = (r) ->
 
 			r.del pos, length
 
+testToString = ->
+	r = new Rope randomStr(20000)
+	console.log r.length
+	timeprint (-> r.toString()), 100000, 'toString'
 
 testSizes = ->
 	throw new Error "You need to uncomment the setSpliceSize line in Rope.coffee to use this test" unless Rope.setSpliceSize?
@@ -59,11 +61,12 @@ testBias = ->
 
 naiveTest = ->
 	r = new Rope()
-	iterations = 80000
+	iterations = 100000
 	timeprint permute(r), iterations, 'Rope'
 #	timeprint permute(helpers.Str()), iterations, 'Str'
 	r.stats()
 
 #testBias()
 naiveTest()
+testToString()
 

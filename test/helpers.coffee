@@ -17,8 +17,8 @@ exports.randomInt = randomInt = (bound) -> Math.floor(random() * bound)
 alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ '
 randomChar = -> alphabet[randomInt(alphabet.length)]
 
-# Generates a random string up to length len
-exports.randomStr = (len = 10) -> (randomChar() for [1..randomInt(len)]).join('') + ' '
+# Generates a random string of length len
+exports.randomStr = (len = 10) -> (randomChar() for [1...len]).join('') + ' '
 
 # We'll make an implementation of the rope API backed by strings
 exports.Str = (s = '') ->
