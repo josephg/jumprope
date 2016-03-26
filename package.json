@@ -3,8 +3,14 @@
   "description": "Fast string editing in Javascript using skip lists",
   "version": "1.0.1",
   "author": "Joseph Gentle <josephg@gmail.com> (josephgentle.com)",
-  "keywords": ["rope", "string", "algorithm"],
-  "files": ["lib/Rope.js"],
+  "keywords": [
+    "rope",
+    "string",
+    "algorithm"
+  ],
+  "files": [
+    "lib/Rope.js"
+  ],
   "main": "lib/Rope.js",
   "directories": {
     "lib": "lib",
@@ -16,10 +22,12 @@
   "engines": {
     "node": "*"
   },
-  "licenses": [{
-    "type": "MIT",
-    "url": "https://github.com/josephg/jumprope/blob/master/LICENSE"
-  }],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/josephg/jumprope/blob/master/LICENSE"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "http://github.com/josephg/jumprope.git"
