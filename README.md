@@ -24,12 +24,14 @@ Installing
 Usage
 -----
 
-    Rope = require('jumprope');
-    
-    var r = new Rope('initial string');
-    r.insert(4, 'some text'); // Insert 'some text' at position 4 in the string
-    r.del(4, 9); // Delete 9 characters from the string at position 4
-    console.log("String contains: " + r.toString() + " length: " + r.length);
+```javascript
+Rope = require('jumprope');
+
+var r = new Rope('initial string');
+r.insert(4, 'some text'); // Insert 'some text' at position 4 in the string
+r.del(4, 9); // Delete 9 characters from the string at position 4
+console.log("String contains: " + r.toString() + " length: " + r.length);
+```
 
 Output:
 
@@ -42,50 +44,64 @@ API
 
 Create a new rope, optionally with the specified initial text.
 
-    Rope = require('jumprope');
-    
-    var r = new Rope(); // Create a new Rope
-    var r = new Rope('str'); // Create a new Rope with initial string 'str'
+```javascript
+Rope = require('jumprope');
+
+var r = new Rope(); // Create a new Rope
+var r = new Rope('str'); // Create a new Rope with initial string 'str'
+```
 
 * `r.insert(position, text)`
 
 Insert text into the rope at the specified position.
 
-    r.insert(4, 'some text'); // Insert 'some text' at position 4. Position must be inside the string.
+```javascript
+r.insert(4, 'some text'); // Insert 'some text' at position 4. Position must be inside the string.
+```
 
 * `r.del(position, count, [callback])`
 
 Delete `count` characters from the rope at `position`. Delete can optionally take a callback, which is called with the deleted substring.
 
-    r.del(4, 10); // Delete 10 characters at position 4
-    r.del(4, 10, function(str) { console.log(str); }); // Delete 10 characters, and print them out.
+```javascript
+r.del(4, 10); // Delete 10 characters at position 4
+r.del(4, 10, function(str) { console.log(str); }); // Delete 10 characters, and print them out.
+```
 
-* `r.each(callback)`
+* `r.forEach(callback)`
 
 Iterate through the rope. The callback will be passed the whole string, a few characters at a time. This is the fastest way to read the string if you want to write it over a network stream, for example.
 
-    // Print the string out, a few characters at a time.
-    r.each(function(str) { console.log(str); })
+```javascript
+// Print the string out, a few characters at a time.
+r.forEach(function(str) { console.log(str); })
+```
 
 * `r.toString()`
 
 Convert the rope into a javascript string.
 
-Internally, this just calls `each()` and `.join`'s the result.
+Internally, this just calls `forEach()` and `.join`'s the result.
 
-    console.log(r.toString());
+```javascript
+console.log(r.toString());
+```
 
 * `r.length`
 
 Get the number of characters in the rope.
 
-    r.del(r.length - 4, 4); // Delete the last 4 characters in the string.
+```javascript
+r.del(r.length - 4, 4); // Delete the last 4 characters in the string.
+```
 
 * `r.substring(position, length)`
 
 Get a substring of the string. Kinda like splice, I guess. Maybe I should copy the JS API.
 
-    console.log(r.substring(4, 10)); // Print out 10 characters from position 4 onwards.
+```javascript
+console.log(r.substring(4, 10)); // Print out 10 characters from position 4 onwards.
+```
 
 Speed
 -----
@@ -95,12 +111,6 @@ At least in V8 (Node / Chrome) it seems like the cross-over point where it becom
 Of course, when your strings are that small it doesn't matter that much how you're using them.
 
 Once your strings get long, jumpropes become a lot faster.
-
-
-Compiling
----------
-
-I'm using a Cakefile to build. Run `cake build:coffee` to recompile the project, or `cake build` to recompile the project and run it through the closure compiler again.
 
 
 License
