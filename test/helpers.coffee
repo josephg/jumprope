@@ -3,8 +3,6 @@
 assert = require 'assert'
 inspect = require('util').inspect
 
-Rope = require '../src/Rope'
-
 random = Math.random
 
 exports.useRandomWithSeed = (seed = 10) ->

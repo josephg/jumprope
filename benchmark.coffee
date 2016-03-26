@@ -34,7 +34,7 @@ permute = (r) ->
 testToString = ->
 	r = new Rope randomStr(20000)
 	console.log r.length
-	timeprint (-> r.toString()), 100000, 'toString'
+	timeprint (-> r.toString()), 1000000, 'toString'
 
 testSizes = ->
 	throw new Error "You need to uncomment the setSpliceSize line in Rope.coffee to use this test" unless Rope.setSpliceSize?
@@ -60,7 +60,7 @@ testBias = ->
 
 naiveTest = ->
 	r = new Rope()
-	iterations = 100000
+	iterations = 1000000
 	timeprint permute(r), iterations, 'Rope'
 #	timeprint permute(helpers.Str()), iterations, 'Str'
 	r.stats()

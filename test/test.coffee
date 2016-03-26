@@ -7,11 +7,6 @@ helpers.addHelpers Rope
 
 {randomInt, randomStr} = helpers
 
-RopeCompiled = try
-  require '../Rope.min'
-catch e
-  null
-
 #Rope = helpers.Str
 
 check = (r, str) ->
