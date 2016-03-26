@@ -1,187 +1,163 @@
 assert = require 'assert'
-assert = require 'assert'
 
 Rope = require '../rope'
 
 helpers = require './helpers'
 helpers.addHelpers Rope
 
-randomInt = helpers.randomInt
-randomStr = helpers.randomStr
+{randomInt, randomStr} = helpers
 
 RopeCompiled = try
-	require '../Rope.min'
+  require '../Rope.min'
 catch e
-	null
+  null
 
 #Rope = helpers.Str
 
-check = (test, r, str) ->
-	try
-		r.verify() if r.verify
-		assert.strictEqual r.toString(), str
-		assert.strictEqual r.length, str.length
+check = (r, str) ->
+  try
+    r.verify() if r.verify
+    assert.strictEqual r.toString(), str
+    assert.strictEqual r.length, str.length
 
-		strings = []
-		r.each (s) -> strings.push s
-		test.strictEqual strings.join(''), str
-	catch e
-		console.error 'Error when checking string:'
-		r.print() if r.print
-		throw e
+    strings = []
+    r.each (s) -> strings.push s
+    assert.strictEqual strings.join(''), str
+  catch e
+    console.error 'Error when checking string:'
+    r.print() if r.print
+    throw e
 
-# I want to run the tests with both the normal rope implementation and the
-# closure compiled version (since closure is run with advanced settings, it can add
-# problems).
-tests = (Impl) ->
-	'empty rope has no content': (test) ->
-		r = new Impl
-		check test, r, ''
-		test.done()
-	
-	'rope initialized with a string has that string as its content': (test) ->
-		str = 'Hi there'
-		r = new Impl str
-		check test, r, str
-		test.done()
 
-	'insert at location inserts': (test) ->
-		r = new Impl
+describe 'Rope', ->
+  it 'has no content when empty', ->
+    r = new Rope
+    check r, ''
+  
+  it 'rope initialized with a string has that string as its content', ->
+    str = 'Hi there'
+    r = new Rope str
+    check r, str
 
-		r.insert 0, 'AAA'
-		check test, r, 'AAA'
+  it 'inserts at location', ->
+    r = new Rope
 
-		r.insert 0, 'BBB'
-		check test, r, 'BBBAAA'
+    r.insert 0, 'AAA'
+    check r, 'AAA'
 
-		r.insert 6, 'CCC'
-		check test, r, 'BBBAAACCC'
+    r.insert 0, 'BBB'
+    check r, 'BBBAAA'
 
-		r.insert 5, 'DDD'
-		check test, r, 'BBBAADDDACCC'
+    r.insert 6, 'CCC'
+    check r, 'BBBAAACCC'
 
-		test.done()
-	
-	'delete at location deletes': (test) ->
-		r = new Impl '012345678'
+    r.insert 5, 'DDD'
+    check r, 'BBBAADDDACCC'
+  
+  it 'deletes at location', ->
+    r = new Rope '012345678'
 
-		r.del 8, 1
-		check test, r, '01234567'
+    r.del 8, 1
+    check r, '01234567'
 
-		r.del 0, 1
-		check test, r, '1234567'
+    r.del 0, 1
+    check r, '1234567'
 
-		r.del 5, 1
-		check test, r, '123457'
+    r.del 5, 1
+    check r, '123457'
 
-		r.del 5, 1
-		check test, r, '12345'
+    r.del 5, 1
+    check r, '12345'
 
-		r.del 0, 5
-		check test, r, ''
+    r.del 0, 5
+    check r, ''
 
-		test.done()
+  it 'delete calls callback with deleted text', ->
+    r = new Rope 'abcde'
+    called = false
+    r.del 1, 3, (str) ->
+      called = true
+      assert.strictEqual str, 'bcd'
 
-	'delete calls callback with deleted text': (test) ->
-		r = new Impl 'abcde'
-		r.del 1, 3, (str) -> test.strictEqual str, 'bcd'
+    assert called
 
-		test.expect 1
-		test.done()
+  it 'does not call forEach with an empty string', ->
+    r = new Rope
+    # This probably won't call the method at all...
+    r.forEach (str) ->
+      throw Error 'should not be called'
+      #assert.strictEqual str, ''
 
-	'each with empty string': (test) ->
-		r = new Impl
-		# This probably won't call the method at all...
-		r.each (str) ->
-			test.strictEqual str, ''
+  it 'runs each correctly with small strings', ->
+    str = 'howdy doody'
+    r = new Rope str
 
-		test.done()
+    strings = []
+    r.each (s) -> strings.push s
+    assert.strictEqual strings.join(''), str
 
-	'each with small string': (test) ->
-		str = 'howdy doody'
-		r = new Impl str
+  it 'substring with an empty string', ->
+    r = new Rope
+    s = r.substring 0, 0
+    assert.strictEqual s, ''
 
-		strings = []
-		r.each (s) -> strings.push s
-		test.strictEqual strings.join(''), str
+  it 'substring', ->
+    r = new Rope '0123456'
 
-		test.done()
-	
-	'substring with an empty string': (test) ->
-		r = new Impl
-		s = r.substring 0, 0
-		test.strictEqual s, ''
+    assert.strictEqual '0', r.substring 0, 1
+    assert.strictEqual '1', r.substring 1, 1
+    assert.strictEqual '01', r.substring 0, 2
+    assert.strictEqual '0123456', r.substring 0, 7
+    assert.strictEqual '456', r.substring 4, 3
 
-		test.done()
+  it 'delete and insert with long strings works as expected', ->
+    str = "some really long string. Look at me go! Oh my god this has to be the longest string I've ever seen. Holy cow. I can see space from up here. Hi everybody - check out my amazing string!\n"
+    str = new Array(1001).join str
 
-	'substring': (test) ->
-		r = new Impl '0123456'
+    r = new Rope str
+    assert.strictEqual r.length, str.length
+    assert.strictEqual r.toString(), str
 
-		test.strictEqual '0', r.substring 0, 1
-		test.strictEqual '1', r.substring 1, 1
-		test.strictEqual '01', r.substring 0, 2
-		test.strictEqual '0123456', r.substring 0, 7
-		test.strictEqual '456', r.substring 4, 3
+    r.del 1, str.length - 2
+    assert.strictEqual r.length, 2
+    assert.strictEqual r.toString(), str[0] + str[str.length - 1]
 
-		test.done()
+  it 'randomized test', ->
+    str = ''
+    r = new Rope
 
-	'delete and insert with long strings works as expected': (test) ->
-		str = "some really long string. Look at me go! Oh my god this has to be the longest string I've ever seen. Holy cow. I can see space from up here. Hi everybody - check out my amazing string!\n"
-		str = new Array(1001).join str
+    for [1..1000]
+      if Math.random() < 0.9
+        # Insert.
+        text = randomStr(100)
+        pos = randomInt(str.length + 1)
 
-		r = new Impl str
-		test.strictEqual r.length, str.length
-		test.strictEqual r.toString(), str
+#        console.log "Inserting '#{text}' at #{pos}"
 
-		r.del 1, str.length - 2
-		test.strictEqual r.length, 2
-		test.strictEqual r.toString(), str[0] + str[str.length - 1]
+        r.insert pos, text
+        str = str[0...pos] + text + str[pos..]
+      else
+        # Delete
+        pos = randomInt(str.length)
+        length = Math.min(str.length - pos, Math.floor(Math.random() * 10))
 
-		test.done()
+#        console.log "Deleting #{length} chars (#{str[pos...pos + length]}) at #{pos}"
 
-	'randomized test': (test) ->
-		str = ''
-		r = new Impl
+        deletedText = str[pos...pos + length]
+        assert.strictEqual deletedText, r.substring pos, length
 
-		for [1..1000]
-			if Math.random() < 0.9
-				# Insert.
-				text = randomStr(100)
-				pos = randomInt(str.length + 1)
+        callbackCalled = no
+        r.del pos, length, (s) ->
+          assert.strictEqual s, deletedText
+          callbackCalled = yes
 
-#				console.log "Inserting '#{text}' at #{pos}"
+        str = str[0...pos] + str[(pos + length)...]
 
-				r.insert pos, text
-				str = str[0...pos] + text + str[pos..]
-			else
-				# Delete
-				pos = randomInt(str.length)
-				length = Math.min(str.length - pos, Math.floor(Math.random() * 10))
+        assert.strictEqual callbackCalled, yes, 'didnt call the delete callback'
 
-#				console.log "Deleting #{length} chars (#{str[pos...pos + length]}) at #{pos}"
+      check r, str
+      assert.strictEqual str, r.toString()
+      assert.strictEqual str.length, r.length
 
-				deletedText = str[pos...pos + length]
-				test.strictEqual deletedText, r.substring pos, length
+    r.stats() if r.stats?
 
-				callbackCalled = no
-				r.del pos, length, (s) ->
-					assert.strictEqual s, deletedText
-					callbackCalled = yes
-
-				str = str[0...pos] + str[(pos + length)...]
-
-				test.strictEqual callbackCalled, yes, 'didnt call the delete callback'
-
-			check test, r, str
-			assert.strictEqual str, r.toString()
-			assert.strictEqual str.length, r.length
-
-		r.stats() if r.stats?
-
-		test.done()
-		
-exports.normal = tests Rope
-if RopeCompiled?
-	exports.compiled = tests RopeCompiled
-else
-	console.error 'Warning: Skipping tests on closure compiled code because I cant load it'

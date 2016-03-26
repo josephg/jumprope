@@ -14,7 +14,7 @@
     "example": "example"
   },
   "scripts": {
-    "test": "nodeunit test/test.coffee"
+    "test": "mocha --compilers coffee:coffee-script/register --reporter spec test/test.coffee"
   },
   "engines": {
     "node": "*"
@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "coffee-script": "*",
-    "nodeunit": "*"
+    "mocha": "^2.4.5"
   },
   "tag": "rc"
 }

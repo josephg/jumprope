@@ -1,8 +1,7 @@
-helpers = require '../test/helpers'
+helpers = require './test/helpers'
 {randomInt, randomStr, addHelpers} = helpers
 
-Rope = addHelpers(require '../src/Rope')
-Compiled = require '../Rope.min'
+Rope = addHelpers(require '.')
 #helpers.addHelpers(Rope)
 
 time = (fn, iterations) ->
