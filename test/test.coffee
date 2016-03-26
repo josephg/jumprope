@@ -1,7 +1,7 @@
 assert = require 'assert'
 assert = require 'assert'
 
-Rope = require '../src/Rope'
+Rope = require '../rope'
 
 helpers = require './helpers'
 helpers.addHelpers Rope

@@ -8,10 +8,7 @@
     "string",
     "algorithm"
   ],
-  "files": [
-    "lib/Rope.js"
-  ],
-  "main": "lib/Rope.js",
+  "main": "rope.js",
   "directories": {
     "lib": "lib",
     "example": "example"
