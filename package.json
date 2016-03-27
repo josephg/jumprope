@@ -17,7 +17,7 @@
     "test": "mocha --compilers coffee:coffee-script/register --reporter spec test/test.coffee"
   },
   "engines": {
-    "node": "*"
+    "node": ">=4.4.1"
   },
   "licenses": [
     {
