@@ -14,10 +14,7 @@
     "example": "example"
   },
   "scripts": {
-    "test": "mocha --compilers coffee:coffee-script/register --reporter spec test/test.coffee"
-  },
-  "engines": {
-    "node": ">=4.4.1"
+    "test": "mocha test/test.coffee"
   },
   "licenses": [
     {
@@ -30,8 +27,7 @@
     "url": "http://github.com/josephg/jumprope.git"
   },
   "devDependencies": {
-    "coffee-script": "*",
-    "mocha": "^2.4.5"
-  },
-  "tag": "rc"
+    "coffeescript": "^2.3.2",
+    "mocha": "5"
+  }
 }
