@@ -1,20 +1,22 @@
 JumpRope
 ========
 
-Jumprope is a fun little library for efficiently editing strings in Javascript. If you have long strings and you need to insert or delete into them, you should use jumprope. Its way faster than splicing strings all the time if the strings are big:
+Jumprope is a fun little library for efficiently editing strings in Javascript. If you have long strings and you need to insert or delete into them, you should use jumprope. Its faster than splicing strings all the time if the strings are big:
 
-    200000 random edits on an empty string, resulting in the string of size 431 206 chars long:
+    5000000 random inserts on an empty string, resulting in the string of size 6M chars long:
 
-    Rope took 1788 ms. 0.00894 ms per iteration, or 111856.82326621923 iterations per second
-    Js strings took 40962 ms. 0.20481 ms per iteration, or 4882.574093061862 iterations per second
+    Rope took 5610 ms. 0.001122 ms per iteration, 891k iterations per second
+    JS toString took 3463 ms. 0.003463 ms per iteration, 288k iterations per second
+
+    (Tested on node v10.13.0)
+
 
 Ropes have insertion and deletion time of O(|s| * log(N)) where
 |s| is the length of the inserted / deleted region
 N is the length of the string
 
-In comparison, javascript strings have insertion time of O(N + s) and deletion time of O(N - s).
+In comparison, naive strings have insertion time of O(N + s) and deletion time of O(N - s). Javascript strings are special and complicated, and much fancier than naive strings. This library was written several years ago. NodeJS strings have gotten faster in the intervening time, and using pure JS strings is a reasonable choice for recent applications.
 
-The code itself is written in coffeescript, because it was much more fun that way. It compiles down to 2.5kb for the browser.
 
 Installing
 ----------

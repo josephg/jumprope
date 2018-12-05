@@ -32,7 +32,7 @@ const bias = 0.7
 //inspect = require('util').inspect
 
 const randomHeight = () => {
-  var length = 1
+  let length = 1
 
   // This method uses successive bits of a random number to figure out whick skip lists
   // to be part of. It is faster than the method below, but doesn't support weird biases.
@@ -73,7 +73,7 @@ class Rope {
 
   *[Symbol.iterator]() {
     // Skip the head, since it has no string.
-    var e = this.head.nexts[0];
+    let e = this.head.nexts[0];
 
     while (e) {
       yield e.str
@@ -88,12 +88,12 @@ class Rope {
       throw new Error("pos " + offset + " must be within the rope (" + this.length + ")");
     }
 
-    var e = this.head;
+    let e = this.head;
     const nodes = new Array(this.head.nexts.length);
     const subtreesize = new Array(this.head.nexts.length);
     if (e.nexts.length > 0) {
       // Iterate backwards through the list.
-      var h = e.nexts.length;
+      let h = e.nexts.length;
       while (h--) {
         while (offset > e.subtreesize[h]) {
           offset -= e.subtreesize[h];
@@ -116,7 +116,7 @@ class Rope {
       subtreesize: new Array(height)
     };
 
-    for (var i = 0; i < height; i++) {
+    for (let i = 0; i < height; i++) {
       if (i < this.head.nexts.length) {
         newE.nexts[i] = nodes[i].nexts[i];
         nodes[i].nexts[i] = newE;
@@ -133,7 +133,7 @@ class Rope {
     }
 
     if (height < nodes.length) {
-      for (var i = height; i < nodes.length; i++) {
+      for (let i = height; i < nodes.length; i++) {
         nodes[i].subtreesize[i] += str.length;
         subtreesize[i] += str.length;
       }
@@ -146,7 +146,7 @@ class Rope {
   }
 
   _updateLength(nodes, length) {
-    for (var i = 0; i < nodes.length; i++) {
+    for (let i = 0; i < nodes.length; i++) {
       nodes[i].subtreesize[i] += length;
     }
     this.length += length;
@@ -167,7 +167,7 @@ class Rope {
       // Insert a new item
 
       // If there's stuff at the end of the current item, we'll remove it for now:
-      var end = null;
+      let end = null;
       if (e.str != null && e.str.length > offset) {
         end = e.str.slice(offset);
         e.str = e.str.slice(0, offset);
@@ -175,7 +175,7 @@ class Rope {
       }
 
       // Split up the new string based on SPLIT_SIZE and insert each chunk.
-      for (var i = 0; i < str.length; i += SPLIT_SIZE) {
+      for (let i = 0; i < str.length; i += SPLIT_SIZE) {
         insertPos = this._spliceIn(nodes, subtreesize, insertPos, str.slice(i, i + SPLIT_SIZE));
       }
       if (end != null) this._spliceIn(nodes, subtreesize, insertPos, end);
@@ -194,10 +194,10 @@ class Rope {
     }
     
     // Only collect strings if we need to.
-    if (getDeleted != null) var strings = [];
+    let strings = getDeleted != null ? [] : null;
 
     const cursor = this.seek(delPos);
-    var e = cursor[0], offset = cursor[1], nodes = cursor[2];
+    let e = cursor[0], offset = cursor[1], nodes = cursor[2];
 
     this.length -= length;
     while (length > 0) {
@@ -209,7 +209,7 @@ class Rope {
         offset = 0;
       }
 
-      var removed = Math.min(length, e.str.length - offset);
+      let removed = Math.min(length, e.str.length - offset);
       if (removed < e.str.length) {
         // We aren't removing the whole node.
         
@@ -217,7 +217,7 @@ class Rope {
 
         // Splice out the string
         e.str = e.str.slice(0, offset) + e.str.slice(offset + removed);
-        for (var i = 0; i < nodes.length; i++) {
+        for (let i = 0; i < nodes.length; i++) {
           if (i < e.nexts.length) {
             e.subtreesize[i] -= removed;
           } else {
@@ -230,8 +230,8 @@ class Rope {
         if (strings != null) strings.push(e.str);
 
         // Unlink the element.
-        for (var i = 0; i < nodes.length; i++) {
-          var node = nodes[i];
+        for (let i = 0; i < nodes.length; i++) {
+          let node = nodes[i];
           if (i < e.nexts.length) {
             node.subtreesize[i] = nodes[i].subtreesize[i] + e.subtreesize[i] - removed;
             node.nexts[i] = e.nexts[i];
@@ -255,16 +255,15 @@ class Rope {
       throw new Error(`Substring (#{offset}-#{offset+length} outside rope (length #{this.length})`);
     }
 
-    const cursor = this.seek(offset);
-    var e = cursor[0], offset = cursor[1];
+    let [e, localOffset] = this.seek(offset)
 
     const strings = [];
     if (e.str == null) e = e.nexts[0];
 
     while (e && length > 0) {
-      var s = e.str.slice(offset, offset + length);
+      let s = e.str.slice(localOffset, localOffset + length);
       strings.push(s);
-      offset = 0;
+      localOffset = 0;
       length -= s.length;
       e = e.nexts[0];
     }
