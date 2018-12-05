@@ -32,7 +32,7 @@ const bias = 0.7
 //inspect = require('util').inspect
 
 const randomHeight = () => {
-  var length = 1;
+  var length = 1
 
   // This method uses successive bits of a random number to figure out whick skip lists
   // to be part of. It is faster than the method below, but doesn't support weird biases.
@@ -43,38 +43,42 @@ const randomHeight = () => {
 //    r = (r - 1) * 2
 //    length++
 
-  while (Math.random() > bias) length++;
+  while (Math.random() > bias) length++
 
   return length
-};
+}
 
 class Rope {
   constructor(str) {
-    if (!(this instanceof Rope)) return new Rope(str);
+    if (!(this instanceof Rope)) return new Rope(str)
 
     this.head = {
       nexts: [],
       subtreesize: []
-    };
-    this.length = 0;
+    }
+    this.length = 0
 
-    if (str != null) this.insert(0, str);
+    if (str != null) this.insert(0, str)
   }
 
   forEach(fn) {
-    // Skip the head, since it has no string.
-    var e = this.head.nexts[0];
-
-    while (e) {
-      fn(e.str);
-      e = e.nexts[0];
-    }
+    for (const s of this) fn(s)
   }
 
   toString() {
     const strings = [];
     this.forEach(str => strings.push(str));
     return strings.join('');
+  }
+
+  *[Symbol.iterator]() {
+    // Skip the head, since it has no string.
+    var e = this.head.nexts[0];
+
+    while (e) {
+      yield e.str
+      e = e.nexts[0];
+    }
   }
 
   // Navigate to a particular position in the string. Returns a cursor at that position.
@@ -270,7 +274,6 @@ class Rope {
   // For backwards compatibility.
   each(fn) { this.forEach(fn); }
   search(offset) { return this.seek(offset); }
-
 }
 
 module.exports = Rope;

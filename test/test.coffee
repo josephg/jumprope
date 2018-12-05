@@ -18,6 +18,11 @@ check = (r, str) ->
     strings = []
     r.each (s) -> strings.push s
     assert.strictEqual strings.join(''), str
+
+    strings = []
+    strings.push(s) for s from r
+    assert.strictEqual strings.join(''), str
+
   catch e
     console.error 'Error when checking string:'
     r.print() if r.print
