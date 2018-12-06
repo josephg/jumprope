@@ -26,8 +26,8 @@ const SPLIT_SIZE = 512
 // Each skip list element has height >= H with P=bias^(H-1).
 //
 // I ran some benchmarks, expecting 0.5 to get the best speed. But, for some reason,
-// the speed is a bit better at 0.7.
-const bias = 0.7
+// the speed is a bit better around 0.62
+const bias = 0.62
 
 //inspect = require('util').inspect
 
@@ -157,7 +157,7 @@ class Rope {
 
     // The spread operator isn't in nodejs yet.
     const cursor = this.seek(insertPos)
-    const e = cursor[0], offset = cursor[1], nodes = cursor[2], subtreesize = cursor[3]
+    const [e, offset, nodes, subtreesize] = cursor
 
     if (e.str != null && e.str.length + str.length < SPLIT_SIZE) {
       // The new string will fit in the end of the current item
@@ -167,7 +167,7 @@ class Rope {
       // Insert a new item
 
       // If there's stuff at the end of the current item, we'll remove it for now:
-      let end = null
+      let end = ''
       if (e.str != null && e.str.length > offset) {
         end = e.str.slice(offset)
         e.str = e.str.slice(0, offset)
@@ -178,7 +178,7 @@ class Rope {
       for (let i = 0; i < str.length; i += SPLIT_SIZE) {
         insertPos = this._spliceIn(nodes, subtreesize, insertPos, str.slice(i, i + SPLIT_SIZE))
       }
-      if (end != null) this._spliceIn(nodes, subtreesize, insertPos, end)
+      if (end !== '') this._spliceIn(nodes, subtreesize, insertPos, end)
     }
 
     // For chaining.
@@ -279,6 +279,6 @@ module.exports = Rope;
 
 // Uncomment these functions in order to run the split size test or the bias test.
 // They have been removed to keep the compiled size down.
-//Rope.setSplitSize = (s) -> splitSize = s
-//Rope.setBias = (n) -> bias = n
+// Rope.setSplitSize = s => splitSize = s
+// Rope.setBias = n => bias = n
 

@@ -13,6 +13,7 @@ timeprint = (fn, iterations, name) ->
 	console.log "Benchmarking #{iterations} iterations of #{name}..."
 	result = time fn, iterations
 	console.log "#{name} took #{result} ms. #{result / iterations} ms per iteration, #{(iterations/result)|0}k iterations per second"
+	iterations/result
 
 permute = (r) ->
 	random = helpers.useRandomWithSeed 100
@@ -51,12 +52,16 @@ testSizes = ->
 
 testBias = ->
 	throw new Error "You need to uncomment the setBias line in Rope.coffee to use this test" unless Rope.setBias?
+	results = []
 	for bias in [0.1..0.99] by 0.02
 		Rope.setBias bias
 
 		r = new Rope()
-		timeprint permute(r), 300000, "Bias #{bias}"
+		results.push [bias, timeprint permute(r), 3000000, "Bias #{bias}"]
 		console.log ""
+
+	console.log results.map((v) -> v.join()).join('\n')
+
 
 naiveTest = ->
 	r = new Rope()
@@ -65,7 +70,7 @@ naiveTest = ->
 #	timeprint permute(helpers.Str()), iterations, 'Str'
 	r.stats()
 
-#testBias()
-naiveTest()
-testToString()
+testBias()
+# naiveTest()
+# testToString()
 
