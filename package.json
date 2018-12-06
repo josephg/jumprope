@@ -1,7 +1,7 @@
 {
   "name": "jumprope",
   "description": "Fast string editing in Javascript using skip lists",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": "Joseph Gentle <me@josephg.com> (josephgentle.com)",
   "keywords": [
     "rope",
