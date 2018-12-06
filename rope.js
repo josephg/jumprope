@@ -71,6 +71,8 @@ class Rope {
     return strings.join('')
   }
 
+  toJSON() { return this.toString() }
+
   *[Symbol.iterator]() {
     // Skip the head, since it has no string.
     let e = this.head.nexts[0]

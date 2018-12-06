@@ -101,6 +101,12 @@ describe 'Rope', ->
     s = r.substring 0, 0
     assert.strictEqual s, ''
 
+  it 'JSON.stringifies to the embedded string', ->
+    r = new Rope 'hi there'
+    json = JSON.stringify r
+    result = JSON.parse json
+    assert.strictEqual result, r.toString()
+
   it 'substring', ->
     r = new Rope '0123456'
 
